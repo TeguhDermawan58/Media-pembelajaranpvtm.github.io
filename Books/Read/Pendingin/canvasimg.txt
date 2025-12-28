@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Modul: Sistem Pendingin - Moto Edu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.js"></script>
+    
+    <style>
+        /* --- RESET & DASAR --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #2d2d2d; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+
+/* --- LOADING SCREEN (MATRIX) --- */
+#loader-container {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #000;
+    z-index: 9999; /* Paling atas */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: opacity 1s ease-out; /* Efek fade out halus */
+}
+
+#matrixCanvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+}
+
+.loading-text {
+    position: relative;
+    z-index: 10000;
+    color: #0F0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 24px;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    border: 1px solid #0F0;
+    box-shadow: 0 0 10px #0F0;
+}
+
+        /* --- TOOLBAR ATAS --- */
+        .toolbar {
+            height: 50px;
+            background-color: #1a1a1a;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid #444;
+            z-index: 300;
+            position: relative;
+        }
+        .brand { font-weight: bold; color: #ffdb56; display: flex; align-items: center; gap: 15px; }
+        .tools { display: flex; gap: 10px; align-items: center; }
+        
+        .tool-btn {
+            background: transparent; border: none; color: #ccc; cursor: pointer; font-size: 18px; padding: 8px;
+            transition: 0.3s; border-radius: 4px; text-decoration: none; display: flex; align-items: center;
+        }
+        .tool-btn:hover { background: #444; color: white; }
+        .tool-btn.active { color: #3090d4; background: #333; }
+        
+        .home-btn { color: #ffdb56; border: 1px solid #ffdb56; font-size: 14px; padding: 5px 15px; font-weight: bold; }
+        .home-btn:hover { background: #ffdb56; color: #000; }
+
+        /* --- CONTAINER UTAMA --- */
+        .main-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url('https://www.transparenttextures.com/patterns/dark-leather.png'), #252525;
+        }
+
+        /* --- SIDEBAR DAFTAR ISI --- */
+        .sidebar {
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            width: 280px;
+            background-color: rgba(26, 26, 26, 0.95);
+            border-right: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+        .sidebar.show { transform: translateX(0); }
+
+        .sidebar-header { 
+            padding: 15px 20px; color: #ffdb56; border-bottom: 1px solid #444; 
+            font-size: 16px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;
+        }
+        .close-sidebar-btn { background: none; border: none; color: #aaa; cursor: pointer; font-size: 18px; }
+        .close-sidebar-btn:hover { color: white; }
+
+        .toc-list { overflow-y: auto; flex: 1; padding: 10px 0; }
+        .toc-item {
+            padding: 12px 20px; color: #ccc; cursor: pointer; font-size: 14px; border-bottom: 1px solid #333;
+            display: flex; justify-content: space-between; transition: 0.2s;
+        }
+        .toc-item:hover { background: #333; color: white; padding-left: 25px; }
+        .toc-item.active { color: #3090d4; background: #2a2a2a; border-left: 4px solid #ffdb56; }
+
+        /* --- WRAPPER BUKU --- */
+        .book-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .flip-book {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        /* --- HALAMAN & KONTEN --- */
+        .page { padding: 0; background-color: white; overflow: hidden; }
+        .page-content {
+            width: 100%; height: 100%; display: flex;
+            justify-content: center; align-items: center;
+            background-color: #fff; position: relative;
+        }
+        .page-image {
+            width: 100%; height: 100%;
+            object-fit: fill; /* Memenuhi halaman */
+            display: block;
+        }
+
+        /* --- HOTSPOTS (Area Klik Transparan) --- */
+        .hotspot-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; }
+        .hotspot { 
+            position: absolute; 
+            cursor: pointer; 
+            background: rgba(255, 255, 0, 0); /* Transparan */
+            transition: 0.2s;
+        }
+        /* Debugging: Hover untuk melihat area hotspot */
+        .hotspot:hover { background: rgba(255, 219, 86, 0.3); border: 1px dashed yellow; }
+
+        /* Navigasi Luar (Tombol Panah Floating) */
+        .nav-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 50px; height: 50px; background: rgba(0,0,0,0.5); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 50; border: 2px solid white; transition: 0.3s;
+        }
+        .nav-arrow:hover { background: #3090d4; transform: translateY(-50%) scale(1.1); }
+        .nav-prev { left: 20px; }
+        .nav-next { right: 20px; }
+
+    </style>
+</head>
+<body>
+    <div id="loader-container">
+        <canvas id="matrixCanvas"></canvas>
+        <div class="loading-text" id="loadingText">MENGUNDUH DATA SISTEM... 0%</div>
+    </div>
+    <div class="toolbar">
+        <div class="brand">
+            <button class="tool-btn" id="btnToggleSidebar" title="Daftar Isi"><i class="fas fa-list"></i></button>
+            <span>MODUL PENDINGIN (COOLING SYSTEM)</span>
+        </div>
+        <div class="tools">
+            <a href="../../index.html" class="tool-btn home-btn" title="Kembali ke Website">
+                <i class="fas fa-sign-out-alt"></i> &nbsp;Keluar
+            </a>
+            <div style="width:1px; height:20px; background:#444; margin:0 5px;"></div>
+            <button class="tool-btn" id="btnZoomOut"><i class="fas fa-minus"></i></button>
+            <button class="tool-btn" id="btnZoomIn"><i class="fas fa-plus"></i></button>
+            <button class="tool-btn" id="btnFullscreen"><i class="fas fa-expand"></i></button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                DAFTAR ISI
+                <button class="close-sidebar-btn" id="btnCloseSidebar"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="toc-list" id="tocList"></div>
+        </aside>
+
+        <div class="nav-arrow nav-prev" id="extPrevBtn"><i class="fas fa-chevron-left"></i></div>
+        <div class="nav-arrow nav-next" id="extNextBtn"><i class="fas fa-chevron-right"></i></div>
+
+        <div class="book-wrapper" id="bookWrapper">
+            <div id="flipbook" class="flip-book"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- LOGIKA MATRIX RAIN ---
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set ukuran canvas full screen
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        const alphabet = katakana + latin + nums;
+
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        // Inisialisasi posisi drop (semua mulai dari atas - y=1)
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        function drawMatrix() {
+            // Background hitam transparan untuk efek jejak (trail)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0F0'; // Warna Hijau Matrix
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        // Jalankan animasi matrix setiap 30ms
+        const matrixInterval = setInterval(drawMatrix, 30);
+
+        // Handle resize window agar matrix tidak pecah
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+
+        // --- LOGIKA UTAMA APLIKASI ---
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // --- CONFIG ---
+            const imagePath = "Pendingin/"; 
+            const totalFiles = 25; 
+            
+            // Variabel untuk Preloading
+            let imagesLoadedCount = 0;
+            const loadingText = document.getElementById('loadingText');
+            const loaderContainer = document.getElementById('loader-container');
+
+            // Fungsi update progress bar
+            function updateProgress() {
+                imagesLoadedCount++;
+                const percentage = Math.floor((imagesLoadedCount / totalFiles) * 100);
+                loadingText.innerText = `MENGUNDUH DATA SISTEM... ${percentage}%`;
+
+                // Jika semua gambar sudah selesai dimuat
+                if (imagesLoadedCount >= totalFiles) {
+                    setTimeout(() => {
+                        // Hentikan animasi matrix & hilangkan loader
+                        clearInterval(matrixInterval);
+                        loaderContainer.style.opacity = '0';
+                        setTimeout(() => {
+                            loaderContainer.style.display = 'none';
+                        }, 1000); // Tunggu efek fade out selesai
+                    }, 500); // Delay sedikit agar user melihat 100%
+                }
+            }
+
+            // --- DATA GENERATOR ---
+            const pagesData = [];
+
+            for (let i = 1; i <= totalFiles; i++) {
+                let pageInfo = {
+                    index: i - 1,
+                    file: `mesin (${i}).png`,
+                    hotspots: []
+                };
+
+                // --- Menambahkan Fungsi Navigasi (Sama seperti sebelumnya) ---
+                if (i > 1) { 
+                    pageInfo.hotspots.push({ top: 12, left: 8, width: 13, height: 10, action: 'flip', target: 0, label: 'Ke Cover' });
+                    pageInfo.hotspots.push({ top: 90, left: 5, width: 15, height: 8, action: 'prev', label: 'Halaman Sebelumnya' });
+                    if (i < totalFiles) {
+                        pageInfo.hotspots.push({ top: 90, left: 80, width: 15, height: 8, action: 'next', label: 'Halaman Selanjutnya' });
+                    }
+                }
+
+                // --- Hotspot Daftar Isi ---
+                if (i === 2) {
+                    pageInfo.hotspots.push({ top: 33, left: 10, width: 20, height: 15, action: 'flip', target: 4 });
+                    pageInfo.hotspots.push({ top: 33, left: 40, width: 20, height: 15, action: 'flip', target: 5 });
+                    pageInfo.hotspots.push({ top: 33, left: 70, width: 20, height: 15, action: 'flip', target: 3 });
+                    pageInfo.hotspots.push({ top: 55, left: 10, width: 20, height: 15, action: 'flip', target: 8 });
+                    pageInfo.hotspots.push({ top: 55, left: 40, width: 20, height: 15, action: 'flip', target: 20 });
+                    pageInfo.hotspots.push({ top: 55, left: 70, width: 20, height: 15, action: 'flip', target: 24 });
+                }
+
+                pagesData.push(pageInfo);
+            }
+
+            const flipbookEl = document.getElementById('flipbook');
+            const tocListEl = document.getElementById('tocList');
+
+            // --- RENDER HALAMAN DENGAN PRELOADER ---
+            pagesData.forEach((page, index) => {
+                const pageDiv = document.createElement('div');
+                pageDiv.classList.add('page');
+                if(index === 0 || index === pagesData.length - 1) pageDiv.setAttribute('data-density', 'hard');
+
+                // PENTING: Menambahkan event 'onload' dan 'onerror' pada gambar
+                // agar progress bar berjalan sesuai status download gambar
+                let imgElement = `<img src="${imagePath}${page.file}" class="page-image" draggable="false" 
+                                  onload="imageLoadedSuccess()" onerror="imageLoadedSuccess()">`;
+                
+                let hotspotsHtml = '';
+                page.hotspots.forEach(hs => {
+                    let clickFn = '';
+                    if(hs.action === 'flip') clickFn = `flipToPage(${hs.target})`;
+                    else if(hs.action === 'prev') clickFn = `pageFlip.flipPrev()`;
+                    else if(hs.action === 'next') clickFn = `pageFlip.flipNext()`;
+
+                    hotspotsHtml += `<div class="hotspot" 
+                        style="top:${hs.top}%; left:${hs.left}%; width:${hs.width}%; height:${hs.height}%;"
+                        onclick="${clickFn}" title="${hs.label || ''}"></div>`;
+                });
+
+                pageDiv.innerHTML = `<div class="page-content">${imgElement}<div class="hotspot-layer">${hotspotsHtml}</div></div>`;
+                flipbookEl.appendChild(pageDiv);
+
+                // --- Sidebar Logic ---
+                const titles = {
+                    0: "Cover Depan", 1: "Daftar Isi", 2: "Kata Pengantar", 3: "Petunjuk Penggunaan",
+                    4: "Peta Konsep", 5: "Uraian Materi", 6: "Tujuan Pembelajaran", 7: "Prinsip Kerja",
+                    8: "Pendingin Udara", 9: "Pendingin Cairan 1", 10: "Pendingin Cairan 2",
+                    13: "Radiator", 14: "Tutup Radiator", 15: "Water Pump", 22: "Diagnosa Overheat", 24: "Daftar Pustaka"
+                };
+                
+                if (titles[index] || index % 5 === 0) {
+                    const titleText = titles[index] || `Halaman ${index + 1}`;
+                    const tocItem = document.createElement('div');
+                    tocItem.className = 'toc-item';
+                    tocItem.innerHTML = `<span>${titleText}</span> <span style="font-size:11px; opacity:0.5">${index + 1}</span>`;
+                    tocItem.onclick = () => { flipToPage(index); toggleSidebar(false); };
+                    tocListEl.appendChild(tocItem);
+                }
+            });
+
+            // Fungsi global agar bisa dipanggil dari atribut onload string HTML
+            window.imageLoadedSuccess = function() {
+                updateProgress();
+            };
+
+            // --- INISIALISASI PAGEFLIP ---
+            const pageFlip = new St.PageFlip(flipbookEl, {
+                width: 450, height: 637,
+                size: "stretch", minWidth: 300, maxWidth: 1000,
+                minHeight: 400, maxHeight: 1200,
+                maxShadowOpacity: 0.5, showCover: true, mobileScrollSupport: false
+            });
+
+            pageFlip.loadFromHTML(document.querySelectorAll('.page'));
+
+            // --- FUNGSI GLOBAL & EVENTS (Sama seperti sebelumnya) ---
+            window.pageFlip = pageFlip;
+            window.flipToPage = (idx) => pageFlip.flip(idx);
+
+            document.getElementById('extPrevBtn').onclick = () => pageFlip.flipPrev();
+            document.getElementById('extNextBtn').onclick = () => pageFlip.flipNext();
+
+            const sidebar = document.getElementById('sidebar');
+            function toggleSidebar(show) {
+                if (show) sidebar.classList.add('show');
+                else sidebar.classList.remove('show');
+            }
+            document.getElementById('btnToggleSidebar').onclick = () => toggleSidebar(!sidebar.classList.contains('show'));
+            document.getElementById('btnCloseSidebar').onclick = () => toggleSidebar(false);
+
+            let currentZoom = 1;
+            const bookDiv = document.getElementById('flipbook');
+            document.getElementById('btnZoomIn').onclick = () => {
+                if (currentZoom < 1.5) { currentZoom += 0.1; bookDiv.style.transform = `scale(${currentZoom})`; }
+            };
+            document.getElementById('btnZoomOut').onclick = () => {
+                if (currentZoom > 0.6) { currentZoom -= 0.1; bookDiv.style.transform = `scale(${currentZoom})`; }
+            };
+            document.getElementById('btnFullscreen').onclick = () => {
+                if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+                else if (document.exitFullscreen) document.exitFullscreen();
+            };
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === "ArrowRight") pageFlip.flipNext();
+                if (e.key === "ArrowLeft") pageFlip.flipPrev();
+            });
+        });
+    </script>
+</body>
+</html>

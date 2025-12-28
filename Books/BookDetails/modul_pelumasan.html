@@ -25,12 +25,58 @@
           <br>
 
           <div class="btn-container">
-             <a href="#" class="btn" onclick="alert('Fitur Baca Online untuk modul ini segera hadir!')">Baca Online <i class="fas fa-book-open"></i></a>
-             <a href="./asesmenpelumasan.html" class="btn-assess">
-              <i class="fas fa-stethoscope"></i> Asesmen Diagnostik
-             </a> 
-             <a href="../../Images/Stuff/MODUL KOKTAHU.pdf" download class="btn" style="background-color: #2ecc71;">Unduh PDF <i class="fas fa-download"></i></a>
-          </div>
+            <a href="../Read/baca-pelumasan.html" class="btn">Baca Online <i class="fas fa-book-open"></i></a>
+            
+            <button id="btnCPTPPelumasan" class="btn-cptp">
+                CP & TP <i class="fas fa-bullseye"></i>
+            </button>
+        
+            <a href="./asesmenpelumasan.html" class="btn-assess">
+                Asesmen Diagnostik <i class="fas fa-stethoscope"></i>
+            </a> 
+            
+            <a href="../Read/pelumasan/pelumasan.pdf" download class="btn-download">
+                Unduh PDF <i class="fas fa-download"></i>
+            </a>
+        </div>
+        
+        <div id="modalCPTPPelumasan" class="cptp-modal">
+            <div class="cptp-content">
+                <span class="close-cptp-pelumasan" style="color:#aaa; float:right; font-size:28px; font-weight:bold; cursor:pointer;">&times;</span>
+                <h2>Capaian & Tujuan Pembelajaran</h2>
+                <hr style="border: 1px solid #3090d4; margin-bottom: 15px;">
+                
+                <div class="materi-box">
+                    <h3><i class="fas fa-trophy"></i> Capaian Pembelajaran (CP)</h3>
+                    <p>Peserta didik mampu melakukan perawatan dan perbaikan sistem pelumasan sepeda motor.</p>
+                </div>
+        
+                <div class="materi-box">
+                    <h3><i class="fas fa-bullseye"></i> Tujuan Pembelajaran (TP)</h3>
+                    <p><strong>Tujuan Utama:</strong> Peserta didik memahami fungsi, jenis pelumas, serta mampu melakukan perawatan berkala sistem pelumasan.</p>
+                    
+                    <br>
+                    <strong>Rincian Tujuan:</strong>
+                    <ul style="margin-left: 20px; line-height: 1.6;">
+                        <li><strong>Kognitif (Pengetahuan):</strong>
+                            <ul>
+                                <li>Menjelaskan fungsi sistem pelumasan pada mesin (mengurangi gesekan, pendingin, pembersih).</li>
+                                <li>Memahami karakteristik pelumas (Viskositas/SAE, Kualitas/API Service).</li>
+                                <li>Mengidentifikasi komponen utama (Pompa oli, Filter oli, <em>Oil Screen</em>).</li>
+                                <li>Menganalisis gangguan seperti tekanan oli rendah atau oli cepat habis.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Psikomotor (Keterampilan):</strong>
+                            <ul>
+                                <li>Melakukan pemeriksaan tinggi dan kualitas oli mesin.</li>
+                                <li>Melakukan penggantian oli dan filter oli sesuai SOP.</li>
+                                <li>Melakukan pemeriksaan fungsi pompa oli.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
           <button id="details">
             <h3>Baca Detail Materi <i class="fa fa-indent"></i></h3>

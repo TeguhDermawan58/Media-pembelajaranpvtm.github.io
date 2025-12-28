@@ -1,61 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis Perawatan Sistem Pelumasan Mesin Sepeda Motor</title>
-    <link rel="shortcut icon" href="../../Images/Stuff/kokTahu.png" type="image/x-icon">
+    <title>Kuis Sistem Pelumasan - Kok Tahu?</title>
+    <link rel="shortcut icon" href="../../Images/Stuff/piston3.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <section id="firstPg">
-        <h2 class="heading">Pelumasan Mesin Sepeda Motor</h2>
-        <button class="btn" id="mode2">🎵</button>
-        <div class="btnCont">
-            <button class="btn" id="start">Mulai!</button>
+
+    <div class="shape shape-1" style="background: #f1c40f;"></div> <div class="shape shape-2"></div>
+
+    <section id="firstPg" class="active-section">
+        <div class="glass-card text-center">
+            <div style="position: absolute; top: 20px; left: 20px;">
+                <a href="../quiz.html" class="btn-nav" style="text-decoration: none; font-weight: 600;">
+                    <i class="fa-solid fa-arrow-left"></i> Pilih Kuis
+                </a>
+            </div>
+
+            <div class="logo-container" style="margin-top: 30px;">
+                <i class="fa-solid fa-gears fa-3x" ></i>
+            </div>
+            <h1 class="main-title">Sistem Pelumasan</h1>
+            <p class="subtitle">Tes wawasanmu tentang oli mesin & pelumasan</p>
+            
+            <div class="controls-container">
+                <button class="icon-btn" id="mode2" title="Musik"><i class="fa-solid fa-music"></i></button>
+                <button class="icon-btn" id="mode" title="Tema"><i class="fa-solid fa-moon"></i></button>
+            </div>
+
+            <button class="btn-primary" id="start">
+                Mulai Kuis <i class="fa-solid fa-arrow-right"></i>
+            </button>
         </div>
-        <button class="btn dark" id="mode">🌙</button>
     </section>
     
     <section id="main">
-        <div id="top">
-            <p id="QNum">1</p>
-            <div id="prog"></div>
-        </div>
-        <div id="subHead"></div>
-        <div id="queCont">
-            <div id="queWrap">
-                <p id="que">Soal</p>
-                <button class="opt">1</button>
-                <button class="opt">2</button>
-                <button class="opt">3</button>
-                <button class="opt">4</button>
+        <div class="glass-card quiz-card">
+            <div class="quiz-header">
+                <div class="progress-container">
+                    <span class="q-text">Soal <span id="QNum">1</span></span>
+                    <div class="progress-bar-bg">
+                        <div id="prog" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+                <div class="controls-mini">
+                    <button class="icon-btn-sm" id="mode3"><i class="fa-solid fa-music"></i></button>
+                    <button class="icon-btn-sm" id="mode4"><i class="fa-solid fa-moon"></i></button>
+                </div>
             </div>
+
+            <div id="queCont">
+                <h2 id="que" class="question-text">Memuat Soal...</h2>
+                <div id="queWrap" class="options-grid">
+                    <button class="opt">Pilihan A</button>
+                    <button class="opt">Pilihan B</button>
+                    <button class="opt">Pilihan C</button>
+                    <button class="opt">Pilihan D</button>
+                </div>
+            </div>
+
+            <div class="quiz-footer">
+                <button id="prev" class="btn-nav"><i class="fa-solid fa-chevron-left"></i> Sebelumnya</button>
+                <button id="nxt" class="btn-nav">Selanjutnya <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            
+            <button id="submit" class="btn-submit">Kirim Jawaban <i class="fa-solid fa-paper-plane"></i></button>
         </div>
-        <div id="chngBtn">
-            <button id="prev">Prev</button>
-            <button id="nxt">Next</button>
-        </div>
-        <button id="submit">SUBMIT</button>
-        <button class="btn" id="mode3">🎵</button>
-        <button class="btn dark" id="mode4">🌙</button>
     </section>
     
-    <section id="resultPg" class="slideL">
-        <h2 class="heading">Hasil Kuis</h2>
-        <div id="resultBox">
-            <h2>Skor Anda</h2>
-            <p><b>Nilai</b><span>:</span><b id="score">0</b></p>
-            <p><b>Soal Terjawab</b><span>:</span><b id="atmptd"></b></p>
-            <p><b>Benar</b><span>:</span><b id="crct"></b></p>
-            <p><b>Salah</b><span>:</span><b id="incrct"></b></p>
+    <section id="resultPg">
+        <div class="glass-card result-card text-center">
+            <div class="trophy-icon">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h2>Hasil Kuis Kamu</h2>
+            
+            <div class="score-circle">
+                <span id="score">0</span>
+                <small>Nilai Akhir</small>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item correct">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span id="crct">0</span>
+                    <small>Benar</small>
+                </div>
+                <div class="stat-item wrong">
+                    <i class="fa-solid fa-times-circle"></i>
+                    <span id="incrct">0</span>
+                    <small>Salah</small>
+                </div>
+                <div class="stat-item attempted">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span id="atmptd">0</span>
+                    <small>Dijawab</small>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-secondary" id="replay"><i class="fa-solid fa-rotate-right"></i> Ulangi</button>
+                <button class="btn-primary" onclick="window.location.href='../../index.html'"><i class="fa-solid fa-house"></i> Home</button>
+            </div>
+             <div style="margin-top: 15px;">
+                <a href="../quiz.html" style="color: var(--text-color); font-size: 0.9rem;">Pilih Kuis Lain</a>
+            </div>
         </div>
-        <button class="btn" id="replay">Ulangi</button>
-        <button class="btn" onclick="home()">Menu Utama</button>
     </section>
 
-    <audio id="audio" src="../../Images/Stuff/ToFu si Tahu.mp3"></audio>
+    <audio id="audio" src="../../Images/Stuff/ToFu si Tahu.mp3" loop></audio>
     
     <script src="questions_pelumasan.js"></script>
     <script src="script.js"></script>

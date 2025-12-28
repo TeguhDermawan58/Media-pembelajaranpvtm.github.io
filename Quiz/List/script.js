@@ -1,254 +1,219 @@
-//---Variables Declaration---//
-
-var mode = document.querySelector("#mode"),
-mus = document.querySelector("#mode2"),
-mus2 = document.querySelector("#mode3"),
-mode4 = document.querySelector("#mode4"),
-audio = document.querySelector("#audio"),
-loadPg = document.querySelector("#loadPg"),
-firstPg = document.querySelector("#firstPg"),
-start = document.querySelector("#start"),
-replay = document.querySelector("#replay"),
-incrct = document.querySelector("#incrct"),
-crct = document.querySelector("#crct"),
-atmptd = document.querySelector("#atmptd"),
-main = document.querySelector("#main"),
-resultPg = document.querySelector("#resultPg"),
-queWrap = document.querySelector("#queWrap"),
-progress = document.querySelector("#prog"),
-qNum = document.querySelector("#QNum"),
-chngBtn = document.querySelector("#chngBtn"),
-nxt = document.querySelector("#nxt"),
-prev = document.querySelector("#prev"),
-que = document.querySelector("#que"),
-opt = document.querySelectorAll(".opt");
+// --- DOM Elements ---
 const body = document.body;
+const firstPg = document.getElementById("firstPg");
+const main = document.getElementById("main");
+const resultPg = document.getElementById("resultPg");
 
-//---User selection Array---//
+// Audio
+const audio = document.getElementById("audio");
+const musicBtns = [document.getElementById("mode2"), document.getElementById("mode3")];
+const themeBtns = [document.getElementById("mode"), document.getElementById("mode4")];
 
-var selections = new Array(ques.length).fill(" ");
+// Quiz Elements
+const startBtn = document.getElementById("start");
+const replayBtn = document.getElementById("replay");
+const prevBtn = document.getElementById("prev");
+const nextBtn = document.getElementById("nxt");
+const submitBtn = document.getElementById("submit");
 
-//---Adding Listener to Next & Prev Buttons----//
+const queText = document.getElementById("que");
+const optContainer = document.getElementById("queWrap");
+const qNumText = document.getElementById("QNum");
+const progressBar = document.getElementById("prog");
 
-nxt.addEventListener("click",vibrt)
-prev.addEventListener("click",vibrt)
+// Result Elements
+const scoreText = document.getElementById("score");
+const crctText = document.getElementById("crct");
+const incrctText = document.getElementById("incrct");
+const atmptdText = document.getElementById("atmptd");
 
-nxt.addEventListener("click",function(){
-   if(n<ques.length-1){
-      n++;
-      showQuestion(n);
-   }
-   else{}
-})
+// --- Variables ---
+let currentQuestionIndex = 0;
+// Array untuk menyimpan jawaban user. Diisi " " (kosong) di awal.
+let userSelections = new Array(ques.length).fill(" ");
 
-prev.addEventListener("click",function(){
-   if(n>0){
-      n--;
-      showQuestion(n);
-   }
-   else{}
-})
+// --- Audio Logic ---
+let isPlaying = false;
 
-//---Question Changer----//
-
-var n = 0;
-var selectedOption = null;
-
-function showQuestion(n) {
-   qNum.innerHTML = n + 1;
-   prog.style.width = (n + 1) / ques.length * 100 + "%";
-
-   for (var i = 0; i < opt.length; i++) {
-      opt[i].innerHTML = ques[n]["opt" + (i + 1)];
-      opt[i].style.backgroundColor = "#001133";
-    //   opt[i].addEventListener("mouseover", hoverOption);
-    //   opt[i].addEventListener("mouseout", resetOption);
-      opt[i].addEventListener("click", selectOption);
-   }
-
-   if (selections[n].innerHTML != " ") {
-      for (var j = 0; j < opt.length; j++) {
-         if (opt[j].innerHTML == selections[n]) {
-            opt[j].style.backgroundColor = "#008074";
-            selectedOption = opt[j];
-         }
-      }
-   }
-
-   que.innerHTML = ques[n].question;
-}
-
-function hoverOption(event) {
-   event.target.style.backgroundColor = "#008074";
-}
-
-function resetOption(event) {
-    event.target.style.backgroundColor = "#001133";
- }
-
-function selectOption(event) {
-   if (selectedOption !== null) {
-      selectedOption.style.backgroundColor = "#001133";
-   }
-   event.target.style.backgroundColor = "ora#008074nge";
-   selectedOption = event.target;
-}
-
-showQuestion(0);
-
-//----Option Selecting Function----//
-
-for(i=0;i<opt.length;i++){
-  opt[i].addEventListener("click",function(){
-     for(j=0;j<opt.length;j++){
-       opt[j].style.backgroundColor="#222";
-     }
-     selections[n] = this.innerHTML;
-     this.style.backgroundColor="#008074";
-  })
-}
-
-//---Submit----//
-
-var score = document.querySelector("#score");
-
-submit.addEventListener("click", function() {
-    resultPg.style.display = "block";
-    setTimeout(function() { resultPg.style.left = "0"; });
- 
-    let correct = 0, incorrect = 0, attempted = 0;
- 
-    for (let k = 0; k < ques.length; k++) {
-       if (selections[k] === ques[k].ans) {
-          correct++;
-          attempted++;
-       } else if (selections[k] !== " ") {
-          incorrect++;
-          attempted++;
-       }
+function toggleMusic() {
+    if (isPlaying) {
+        audio.pause();
+        musicBtns.forEach(btn => btn.style.background = "rgba(255,255,255,0.2)");
+    } else {
+        audio.play().catch(error => console.log("Audio play blocked:", error));
+        musicBtns.forEach(btn => btn.style.background = "#00cec9"); // Accent color active
     }
- 
-    score.innerHTML = ((correct / ques.length) * 100).toFixed(2);
-    crct.innerHTML = correct;
-    incrct.innerHTML = incorrect;
-    atmptd.innerHTML = attempted;
- 
-    setTimeout(function() { main.style.display = "none"; }, 500);
- });
-
-//---Replay----//
-
-replay.addEventListener("click",rplay)
-function rplay(){
-   selections.fill(" ")
-   for(i=0;i<opt.length;i++){
-      opt[i].style.background="black";
-   }
-   resultPg.style.left="100%";
-   n=0,attempted=0,correct=0,incorrect=0;
-   showQuestion(0);
-   main.style.display="block";
-   setTimeout(function(){
-      resultPg.style.display="none";
-   },500)
+    isPlaying = !isPlaying;
 }
 
-//---Start----//
+musicBtns.forEach(btn => btn.addEventListener("click", toggleMusic));
 
-start.addEventListener("click",function(){
-   main.style.display="block";
-   main.style.left="100%"
-   setTimeout(function(){
-      main.style.left="0";
-   })
-   setTimeout(function(){
-      firstPg.style.display="none"
-   },500)
-   rplay();
-})
+// --- Theme Logic (Dark/Light Mode) ---
+themeBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+        body.classList.toggle("dark-mode-active");
+        const icon = btn.querySelector("i");
+        if(body.classList.contains("dark-mode-active")){
+            icon.classList.replace("fa-moon", "fa-sun");
+        } else {
+            icon.classList.replace("fa-sun", "fa-moon");
+        }
+    });
+});
 
-//---Home function----//
-
-function home(){
-   firstPg.style.display="block";
-   resultPg.style.left="100%";
-   setTimeout(function(){
-      resultPg.style.display="none";
-   },500)
+// --- Navigation Logic ---
+function switchSection(hideSection, showSection) {
+    hideSection.classList.remove("active-section");
+    // Sedikit delay untuk animasi fade out
+    setTimeout(() => {
+        showSection.classList.add("active-section");
+    }, 100);
 }
 
-//---Audio----//
+startBtn.addEventListener("click", () => {
+    switchSection(firstPg, main);
+    loadQuestion(0);
+});
 
-mus.addEventListener("click",music)
-function music(){
-   if(audio.paused){
-      audio.play();
-      mus.style.background="#ffa";
-   }
-   else{
-      audio.pause();
-      mus.style.background="var(--txt)";
-   }
+function home() {
+    switchSection(resultPg, firstPg);
+    resetQuiz();
 }
 
-mus2.addEventListener("click",music2)
-function music2(){
-   if(audio.paused){
-      audio.play();
-      mus2.style.background="#ffa";
-   }
-   else{
-      audio.pause();
-      mus2.style.background="var(--txt)";
-   }
-}
+// --- Quiz Logic ---
 
-//---Vibrator---//
+function loadQuestion(index) {
+    // Update Nomor Soal & Progress Bar
+    qNumText.innerText = index + 1;
+    const progressPercent = ((index + 1) / ques.length) * 100;
+    progressBar.style.width = `${progressPercent}%`;
 
-function vibrt(bs){navigator.vibrate("75");}
+    // Tampilkan Pertanyaan
+    queText.innerText = ques[index].question;
 
-//----Mode Changer------//
+    // Tampilkan Opsi
+    // Kita reset isi container dulu
+    optContainer.innerHTML = "";
+    
+    // Ambil opsi dari object questions (asumsi keys: opt1, opt2, opt3, opt4)
+    for (let i = 1; i <= 4; i++) {
+        const btn = document.createElement("button");
+        btn.classList.add("opt");
+        btn.innerText = ques[index]["opt" + i];
+        
+        // Cek apakah user sudah memilih jawaban ini sebelumnya
+        if (userSelections[index] === btn.innerText) {
+            btn.classList.add("selected");
+        }
 
-var root = document.querySelector(":root");
+        // Event Klik Opsi
+        btn.addEventListener("click", function() {
+            selectOption(this, index);
+        });
 
-mode.addEventListener("click",function(){
-   
-   if(mode.classList.contains("dark")){
-      root.style.setProperty("--mode-color","#013");
-      root.style.setProperty("--dot-color","#308a8a");
-      root.style.setProperty("--txt","#eef");
-      root.style.setProperty("--trans","rgba(255,255,255,.1)")
-      mode.className="btn light";
-      mode.innerHTML ="🔆";
-   }
-   else{
-      root.style.setProperty("--mode-color","#6071bf");
-      root.style.setProperty("--dot-color","white");
-      root.style.setProperty("--txt","#fff");
-      root.style.setProperty("--trans","rgba(0,0,0,.1)")
-      mode.className="btn dark";
-      mode.innerHTML ="🌙";
-   }
-   
-})
-
-mode4.addEventListener("click",function(){
-   
-    if(mode4.classList.contains("dark")){
-       root.style.setProperty("--mode-color","#013");
-       root.style.setProperty("--dot-color","#308a8a");
-       root.style.setProperty("--txt","#eef");
-       root.style.setProperty("--trans","rgba(255,255,255,.1)")
-       mode4.className="btn light";
-       mode4.innerHTML ="🔆";
-    }
-    else{
-       root.style.setProperty("--mode-color","#6071bf");
-       root.style.setProperty("--dot-color","white");
-       root.style.setProperty("--txt","#fff");
-       root.style.setProperty("--trans","rgba(0,0,0,.1)")
-       mode4.className="btn dark";
-       mode4.innerHTML ="🌙";
+        optContainer.appendChild(btn);
     }
     
- })
+    currentQuestionIndex = index;
+    updateNavButtons();
+}
+
+function selectOption(selectedBtn, index) {
+    // Hapus kelas selected dari semua tombol
+    const allOpts = optContainer.querySelectorAll(".opt");
+    allOpts.forEach(btn => btn.classList.remove("selected"));
+
+    // Tambahkan ke tombol yang diklik
+    selectedBtn.classList.add("selected");
+    
+    // Simpan jawaban
+    userSelections[index] = selectedBtn.innerText;
+    
+    // Efek getar HP (jika didukung)
+    if (navigator.vibrate) navigator.vibrate(50);
+}
+
+function updateNavButtons() {
+    // Disable Prev button if first question
+    if (currentQuestionIndex === 0) {
+        prevBtn.style.opacity = "0.5";
+        prevBtn.style.pointerEvents = "none";
+    } else {
+        prevBtn.style.opacity = "1";
+        prevBtn.style.pointerEvents = "auto";
+    }
+
+    // Handle Next button logic
+    if (currentQuestionIndex === ques.length - 1) {
+        nextBtn.style.display = "none";
+        submitBtn.style.display = "flex"; // Show submit on last question
+    } else {
+        nextBtn.style.display = "flex";
+        submitBtn.style.display = "none";
+    }
+}
+
+nextBtn.addEventListener("click", () => {
+    if (currentQuestionIndex < ques.length - 1) {
+        loadQuestion(currentQuestionIndex + 1);
+    }
+});
+
+prevBtn.addEventListener("click", () => {
+    if (currentQuestionIndex > 0) {
+        loadQuestion(currentQuestionIndex - 1);
+    }
+});
+
+// --- Submit & Result ---
+
+submitBtn.addEventListener("click", () => {
+    calculateResult();
+    switchSection(main, resultPg);
+});
+
+function calculateResult() {
+    let correct = 0;
+    let incorrect = 0;
+    let attempted = 0;
+
+    for (let i = 0; i < ques.length; i++) {
+        if (userSelections[i] !== " ") {
+            attempted++;
+            if (userSelections[i] === ques[i].ans) {
+                correct++;
+            } else {
+                incorrect++;
+            }
+        }
+    }
+
+    // Hitung skor (skala 0-100)
+    let finalScore = 0;
+    if (ques.length > 0) {
+        finalScore = ((correct / ques.length) * 100).toFixed(0);
+    }
+
+    // Tampilkan ke UI
+    scoreText.innerText = finalScore;
+    crctText.innerText = correct;
+    incrctText.innerText = incorrect;
+    atmptdText.innerText = attempted;
+}
+
+// --- Replay ---
+
+replayBtn.addEventListener("click", () => {
+    resetQuiz();
+    switchSection(resultPg, main);
+    loadQuestion(0);
+});
+
+function resetQuiz() {
+    currentQuestionIndex = 0;
+    userSelections.fill(" ");
+}
+
+// Inisialisasi awal (jika diperlukan)
+// loadQuestion(0); // Dipanggil saat tombol start ditekan
+

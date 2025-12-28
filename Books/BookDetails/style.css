@@ -52,14 +52,91 @@ p {
   line-height: 60px;
   margin: 25px 0;
 }
+/* --- CONTAINER TOMBOL (Agar Rapi & Sejajar) --- */
+.btn-container {
+  display: flex;
+  flex-wrap: wrap; /* Agar turun ke bawah jika layar sempit */
+  gap: 15px; /* Jarak antar tombol yang konsisten */
+  margin: 25px 0;
+  align-items: center;
+}
+
+/* --- GAYA UMUM SEMUA TOMBOL --- */
+/* Kita gabungkan agar ukurannya seragam */
+.btn, 
+.btn-assess, 
+.btn-cptp,.btn-download {
+  display: inline-flex; /* Agar ikon dan teks rata tengah */
+  align-items: center;
+  justify-content: center;
+  padding: 12px 25px; /* Padding seragam */
+  border-radius: 50px; /* Membuat tombol bulat lonjong */
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white !important; /* Paksa warna teks putih */
+  margin: 0; /* Reset margin lama, kita pakai 'gap' di container */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Sedikit bayangan */
+  min-width: 140px; /* Lebar minimal agar tidak terlalu gepeng */
+}
+
+/* Jarak antara ikon dan teks */
+.btn i, 
+.btn-assess i, 
+.btn-cptp i,.btn-download i {
+  margin-left: 8px;
+}
+
+/* --- WARNA SPESIFIK --- */
+/* Tombol Baca Online (Biru) */
 .btn {
-  display: inline-block;
   background: #3090d4;
-  color: #fff;
-  padding: 8px 30px;
-  margin: 30px 0;
-  border-radius: 30px;
-  transition: 350ms ease-in;
+}
+.btn:hover {
+  background: #1e73b1;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(48, 144, 212, 0.3);
+}
+
+/* --- TAMPILAN KHUSUS HP (MOBILE) --- */
+@media screen and (max-width: 768px) {
+  .btn-container {
+    flex-direction: column;  /* Susun tombol ke bawah */
+    padding: 0 20px;         /* Beri jarak dari pinggir layar */
+  }
+
+  .btn, 
+  .btn-cptp, 
+  .btn-assess, 
+  .btn-download {
+    width: 100%;             /* Tombol melebar penuh */
+    max-width: 100%;         /* Hapus batas lebar desktop */
+    margin: 0;               /* Reset margin */
+    padding: 15px;           /* Perbesar area sentuh jari */
+    font-size: 16px;         /* Perbesar teks sedikit agar terbaca */
+  }
+}
+
+/* Tombol Asesmen (Oranye) */
+.btn-assess {
+  background: #FF9800;
+}
+.btn-assess:hover {
+  background: #e68900;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(255, 152, 0, 0.3);
+}
+
+.btn-download {
+  background: #2ecc71;
+}
+.btn-download:hover {
+  background: #27ae60;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(46, 204, 113, 0.3);
 }
 
 #details {
@@ -93,9 +170,6 @@ p {
 }
 .header .row {
   margin-top: 0px;
-}
-.btn:hover {
-  background: #1e73b1;
 }
 
 .categories {
@@ -273,24 +347,7 @@ h4 {
 
 }
 
-/* TOMBOL ASESMEN */
-.btn-assess {
-  display: inline-block;
-  padding: 12px 25px;
-  background: #FF9800; /* Warna Oranye Pembeda */
-  color: white;
-  border-radius: 30px;
-  text-decoration: none;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  margin-left: 10px;
-  transition: 0.3s;
-}
-.btn-assess:hover {
-  background: #e68900;
-  transform: translateY(-3px);
-}
+
 
 /* MODAL STYLE */
 .assessment-modal {
@@ -350,5 +407,94 @@ h4 {
   font-size: 18px;
   border-radius: 10px;
   cursor: pointer;
+}
+
+/* Style untuk Tombol CP & TP */
+.btn-cptp {
+  display: inline-block;
+  padding: 12px 25px;
+  background: #9b59b6; /* Warna Ungu agar beda */
+  color: white;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  margin: 30px 10px; /* Sesuaikan margin agar sejajar */
+  transition: 0.3s;
+  font-size: 16px; /* Menyamakan ukuran font dengan link btn */
+}
+
+.btn-cptp:hover {
+  background: #8e44ad;
+  transform: translateY(-3px);
+}
+
+/* Style untuk Modal CP & TP */
+.cptp-modal {
+  display: none; /* Hidden by default */
+  position: fixed; 
+  z-index: 9999; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+  backdrop-filter: blur(5px);
+}
+
+.cptp-content {
+  background-color: #fefefe;
+  margin: 10% auto; /* 10% from the top and centered */
+  padding: 30px;
+  border: 1px solid #888;
+  width: 80%; 
+  max-width: 700px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  position: relative;
+  animation: slideDown 0.4s;
+}
+
+@keyframes slideDown {
+  from {top: -100px; opacity: 0;}
+  to {top: 0; opacity: 1;}
+}
+
+.close-cptp {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  position: absolute;
+  right: 20px;
+  top: 10px;
+}
+
+.close-cptp:hover,
+.close-cptp:focus {
+  color: #e74c3c;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.materi-box {
+  background: #f4f8fb;
+  border-left: 5px solid #3090d4;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.materi-box h3 {
+  color: #3090d4;
+  margin-bottom: 10px;
+}
+
+.materi-box ul {
+    list-style-type: disc;
+    margin-top: 5px;
 }
 
